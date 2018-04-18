@@ -1,0 +1,12 @@
+/config.json
+/process.json
+/node_modules
+/package-lock.json
+*.iml
+*.log
+*.data
+npm-debug.log*
+/.idea
+/.vscode
+/.history
+/build
