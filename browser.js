@@ -4,7 +4,7 @@
     {
         window[packageName] = {};
     }
-    var MAX_360_CHROME_VERSION = 55;
+    var MAX_360_CHROME_VERSION = 63;
     function getIOSVersion(ua) {
         if (/cpu (?:iphone )?os (\d+_\d+)/.test(ua)){
             return parseFloat(RegExp.$1.replace("_", "."));
@@ -112,9 +112,9 @@
             });
             this.sorted = s;
             this.details = init;
-            this.result = s[0][0];
+            this.result = s[0][0] || '';
     
-            return this.result;
+            return this.result.toLowerCase();
         }
     
     };
@@ -197,6 +197,10 @@
         } else if (s = ua.match(/msie ([\d.]+)/)) {
             browser.name = 'ie';
             browser['ie'] = s[1];
+        }
+        else if (s = ua.match(/edge\/([\d.]+)/)) {
+            browser.name = 'edge';
+            browser['edge'] = s[1];
         }
         else if (s = ua.match(/firefox\/([\d.]+)/)) {
             browser.name = 'firefox';
