@@ -1,6 +1,6 @@
 {
   "name": "browser-version.js",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "一个检测国内外浏览器版本的前端 js 库",
   "main": "browser.js",
   "directories": {

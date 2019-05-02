@@ -4,7 +4,7 @@
     {
         window[packageName] = {};
     }
-    var MAX_360_CHROME_VERSION = 63;
+    var MAX_360_CHROME_VERSION = 69;//以360极速浏览器的最大内核版本为准
     function getIOSVersion(ua) {
         if (/cpu (?:iphone )?os (\d+_\d+)/.test(ua)){
             return parseFloat(RegExp.$1.replace("_", "."));
