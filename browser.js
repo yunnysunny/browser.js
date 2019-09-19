@@ -162,7 +162,11 @@
             return 'uc';
         }
 
-        if (window.navigator.vendor && window.navigator.vendor.indexOf('Opera') == 0) {//opera
+        if (
+            (/\sOPR\//.test(appVersion))
+            || (/Opera/.test(appVersion))
+            || (window.navigator.vendor && window.navigator.vendor.indexOf('Opera') === 0)
+        ) {//opera
             return 'opera';
         }
         // chrome
