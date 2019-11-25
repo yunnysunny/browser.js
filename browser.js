@@ -191,43 +191,47 @@
         return browser360.check();
     }
     var client = function(){
-        var browser = {};
+        var browser = { localeName: null };
 
         var ua = navigator.userAgent.toLowerCase();
         var s;
         if (s = ua.match(/rv:([\d.]+)\) like gecko/)) {
             browser.name = 'ie';
-            browser['ie'] = s[1];
+            browser.version = s[1];
         } else if (s = ua.match(/msie ([\d.]+)/)) {
             browser.name = 'ie';
-            browser['ie'] = s[1];
+            browser.version = s[1];
         }
         else if (s = ua.match(/edge\/([\d.]+)/)) {
             browser.name = 'edge';
-            browser['edge'] = s[1];
+            browser.version = s[1];
         }
         else if (s = ua.match(/firefox\/([\d.]+)/)) {
             browser.name = 'firefox';
-            browser['firefox'] = s[1];
+            browser.version = s[1];
         }
         else if (s = ua.match(/chrome\/([\d.]+)/)) {
             browser.name = 'chrome';
-            browser['chrome'] = s[1];
-            var type = _getChromiumType(browser['chrome']);
+            browser.version = s[1];
+            var type = _getChromiumType(browser.version);
             if (type) {
-                browser['chrome'] += '(' + type + ')';
+                browser.localeName = type + '浏览器'
             }
         }
         else if (s = ua.match(/opera.([\d.]+)/)) {
             browser.name = 'opera';
-            browser['opera'] = s[1];
+            browser.version = s[1];
         }
         else if (s = ua.match(/version\/([\d.]+).*safari/)) {
             browser.name = 'safari';
-            browser['safari'] = s[1];
+            browser.version = s[1];
         } else {
             browser.name = 'unknown';
-            browser['unknow'] = 0;
+            browser.version = 0;
+        }
+
+        if (!browser.localeName) {
+            browser.localeName = (browser.name === 'browser.name' ? '未知' : browser.name) + '浏览器'
         }
 
         var system = {};
@@ -296,10 +300,10 @@
         var isMobile = system.android || system.iphone || system.ios || system.ipad || system.ipod || system.nokia;
 
         return {
-            browser:    browser,
-            system:     system,
-            isMobile :	isMobile,
-            string : str
+            browser: browser,
+            system: system,
+            isMobile: isMobile,
+            string: str
         };
     }();
     window[packageName]['browser'] = client;
