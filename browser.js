@@ -187,57 +187,94 @@
         //     return webstoreKeysLength > 1 ? '360ee' : '360se';
         // }
 
-
-        return browser360.check();
+        var browser360Result = browser360.check();
+        if (browser360Result === '360se') {
+            return '360安全';
+        } else if (browser360Result === '360ee') {
+            return '360极速'; 
+        }
+        return browser360Result
+    }
+    function Browser(options) {
+        this.name = options.name;
+        this.version = options.version;
+        this.localeName = options.localeName;
     }
     var client = function(){
-        var browser = { localeName: null };
-
+        var browser;
         var ua = navigator.userAgent.toLowerCase();
         var s;
         if (s = ua.match(/rv:([\d.]+)\) like gecko/)) {
-            browser.name = 'ie';
-            browser.version = s[1];
+            Browser.prototype['ie'] = s[1];
+            browser = new Browser({
+                name: 'ie',
+                version: s[1],
+                localeName: 'ie浏览器'
+            })
         } else if (s = ua.match(/msie ([\d.]+)/)) {
-            browser.name = 'ie';
-            browser.version = s[1];
+            Browser.prototype['ie'] = s[1];
+            browser = new Browser({
+                name: 'ie',
+                version: s[1],
+                localeName: 'ie浏览器'
+            })
         }
         else if (s = ua.match(/edge\/([\d.]+)/)) {
-            browser.name = 'edge';
-            browser.version = s[1];
+            Browser.prototype['edge'] = s[1];
+            browser = new Browser({
+                name: 'edge',
+                version: s[1],
+                localeName: 'edge浏览器'
+            })
         }
         else if (s = ua.match(/firefox\/([\d.]+)/)) {
-            browser.name = 'firefox';
-            browser.version = s[1];
+            Browser.prototype['firefox'] = s[1];
+            browser = new Browser({
+                name: 'firefox',
+                version: s[1],
+                localeName: 'firefox浏览器'
+            })
         }
         else if (s = ua.match(/chrome\/([\d.]+)/)) {
-            browser.name = 'chrome';
-            browser.version = s[1];
+            Browser.prototype['chrome'] = s[1];
+            browser = new Browser({
+                name: 'chrome',
+                version: s[1],
+                localeName: 'chrome浏览器'
+            })
             var type = _getChromiumType(browser.version);
             if (type) {
                 browser.localeName = type + '浏览器'
+                Browser.prototype['chrome'] += '(' + type + ')'
             }
         }
         else if (s = ua.match(/opera.([\d.]+)/)) {
-            browser.name = 'opera';
-            browser.version = s[1];
+            Browser.prototype['opera'] = s[1];
+            browser = new Browser({
+                name: 'opera',
+                version: s[1],
+                localeName: 'opera浏览器'
+            })
         }
         else if (s = ua.match(/version\/([\d.]+).*safari/)) {
-            browser.name = 'safari';
-            browser.version = s[1];
+            Browser.prototype['safari'] = s[1];
+            browser = new Browser({
+                name: 'safari',
+                version: s[1],
+                localeName: 'safari浏览器'
+            })
         } else {
-            browser.name = 'unknown';
-            browser.version = 0;
-        }
-
-        if (!browser.localeName) {
-            browser.localeName = (browser.name === 'browser.name' ? '未知' : browser.name) + '浏览器'
+            Browser.prototype['unknown'] = '0';
+            browser = new Browser({
+                name: 'unknown',
+                version: '0',
+                localeName: '未知浏览器'
+            })
         }
 
         var system = {};
 
         //detect platform
-//        var p = navigator.platform.toLowerCase();
         if (ua.indexOf('iphone') > -1) {
             system.name = 'iphone';
             system.iphone = getIOSVersion(ua);
