@@ -199,20 +199,19 @@
         this.name = options.name;
         this.version = options.version;
         this.localeName = options.localeName;
+        this.constructor.prototype[options.name] = options.version
     }
     var client = function(){
         var browser;
         var ua = navigator.userAgent.toLowerCase();
         var s;
         if (s = ua.match(/rv:([\d.]+)\) like gecko/)) {
-            Browser.prototype['ie'] = s[1];
             browser = new Browser({
                 name: 'ie',
                 version: s[1],
                 localeName: 'ie浏览器'
             })
         } else if (s = ua.match(/msie ([\d.]+)/)) {
-            Browser.prototype['ie'] = s[1];
             browser = new Browser({
                 name: 'ie',
                 version: s[1],
@@ -220,7 +219,6 @@
             })
         }
         else if (s = ua.match(/edge\/([\d.]+)/)) {
-            Browser.prototype['edge'] = s[1];
             browser = new Browser({
                 name: 'edge',
                 version: s[1],
@@ -228,7 +226,6 @@
             })
         }
         else if (s = ua.match(/firefox\/([\d.]+)/)) {
-            Browser.prototype['firefox'] = s[1];
             browser = new Browser({
                 name: 'firefox',
                 version: s[1],
@@ -236,7 +233,6 @@
             })
         }
         else if (s = ua.match(/chrome\/([\d.]+)/)) {
-            Browser.prototype['chrome'] = s[1];
             browser = new Browser({
                 name: 'chrome',
                 version: s[1],
@@ -249,7 +245,6 @@
             }
         }
         else if (s = ua.match(/opera.([\d.]+)/)) {
-            Browser.prototype['opera'] = s[1];
             browser = new Browser({
                 name: 'opera',
                 version: s[1],
@@ -257,14 +252,12 @@
             })
         }
         else if (s = ua.match(/version\/([\d.]+).*safari/)) {
-            Browser.prototype['safari'] = s[1];
             browser = new Browser({
                 name: 'safari',
                 version: s[1],
                 localeName: 'safari浏览器'
             })
         } else {
-            Browser.prototype['unknown'] = '0';
             browser = new Browser({
                 name: 'unknown',
                 version: '0',
