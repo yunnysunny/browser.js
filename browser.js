@@ -4,7 +4,7 @@
     {
         window[packageName] = {};
     }
-    var MAX_360_CHROME_VERSION = 69;//以360极速浏览器的最大内核版本为准
+    var MAX_360_CHROME_VERSION = 78;//以360极速浏览器的最大内核版本为准
     function getIOSVersion(ua) {
         if (/cpu (?:iphone )?os (\d+_\d+)/.test(ua)){
             return parseFloat(RegExp.$1.replace("_", "."));
@@ -24,99 +24,156 @@
         }
         return !1;
     }
-    var browser360 = {
-        result: "Chrome",
-        details: {
-            Chrome: 5,
-            Chromium: 0,
-            _360SE: 0,
-            _360EE: 0
+
+    var chrome_weight = {
+        "result": "Chrome",
+        "details": {
+            "Chrome": 5,
+            "Chromium": 0,
+            "_360SE": 0,
+            "_360EE": 0
         },
-        sorted: ["Chrome", "360SE", "360EE", "Chromium"],
-        check: function() {
-            var init = {
-                Chrome: 5,
-                Chromium: 0,
-                _360SE: 0,
-                _360EE: 0
+        "sorted": ["Chrome", "360SE", "360EE", "Chromium"],
+        "exec": function exec(results) {
+            var details = {
+                "Chrome": 5,
+                "Chromium": 0,
+                "_360SE": 0,
+                "_360EE": 0
             };
-    
-    
-            var plugins = window.navigator.plugins;
-    
-    
-            var webstore = window.chrome.webstore;
-            var webstoreLen = Object.keys(webstore).length;
-            var pluginsLen = plugins.length;
-    
-            if (window.clientInformation.languages ||
-                (init._360SE += 8), /zh/i.test(navigator.language) &&
-                (init._360SE += 3, init._360EE += 3), window.clientInformation.languages) {
-                var lanLen = window.clientInformation.languages.length;
-                if (lanLen >= 3) {
-                    (init.Chrome += 10, init.Chromium += 6);
-                } else if (2 == lanLen) {
-                    init.Chrome += 3, init.Chromium += 6, init._360EE += 6;
-                } else if (1 == lanLen) {
-                    init.Chrome += 4, init.Chromium += 4;
-                }
-    
-            }
-            var pluginFrom,
-                maybe360 = 0;
-            for (var r in plugins) {
-                if (pluginFrom = /^(.+) PDF Viewer$/.exec(plugins[r].name)) {
-                    if ("Chrome" == pluginFrom[1]) {
-                        init.Chrome += 6,
-                            init._360SE += 6,
-                            maybe360 = 1;
-    
-                    } else if ("Chromium" == pluginFrom[1]) {
-                        init.Chromium += 10,
-                            init._360EE += 6,
-                            maybe360 = 1;
-    
+            var _ua = window.navigator.userAgent;
+            if (/Chrome\/([\d.])+\sSafari\/([\d.])+$/.test(_ua)) {
+                if (window.navigator.platform == "Win32") {
+                    if (!window.clientInformation.languages) {
+                        details._360SE += 8;
                     }
-                } else if ("np-mswmp.dll" == plugins[r].filename) {
-                    init._360SE += 20, init._360EE += 20;
-                }
-            }
-    
-            maybe360 || (init.Chromium += 9);
-            if (webstoreLen <= 1) {
-                init._360SE += 7;
-            } else {
-                init._360SE += 4;
-                init.Chromium += 3;
-                if (pluginsLen >= 30) {
-                    init._360EE += 7, init._360SE += 7, init.Chrome += 7;
-                } else if (pluginsLen < 30 && pluginsLen > 10) {
-                    init._360EE += 3, init._360SE += 3, init.Chrome += 3;
+                    if (/zh/i.test(navigator.language)) {
+                        details._360SE += 3;
+                        details._360EE += 3;
+                    }
+                    if (window.clientInformation.languages) {
+                        var lang_len = window.clientInformation.languages.length;
+                        if (lang_len >= 3) {
+                            details.Chrome += 10;
+                            details.Chromium += 6;
+                        } else if (lang_len == 2) {
+                            details.Chrome += 3;
+                            details.Chromium += 6;
+                            details._360EE += 6;
+                        } else if (lang_len == 1) {
+                            details.Chrome += 4;
+                            details.Chromium += 4;
+                        }
+                    }
+                    for (var i in window.navigator.plugins) {
+                        if (window.navigator.plugins[i].filename == "np-mswmp.dll") {
+                            details._360SE += 20;
+                            details._360EE += 20;
+                        }
+                    }
+                    if (!window.chrome.webstore) {
+                        details._360SE += 20;
+                        details._360EE += 20;
+                    } else {
+                        if (Object.keys(window.chrome.webstore).length <= 1) {
+                            details._360SE += 7;
+                        } else if (Object.keys(window.chrome.webstore).length == 2) {
+                            details._360SE += 4;
+                            details.Chromium += 3;
+                        }
+                    }
+                    
+
+                    if (window.navigator.plugins.length >= 30) {
+                        details._360EE += 7;
+                        details._360SE += 7;
+                        details.Chrome += 7;
+                    } else if (window.navigator.plugins.length < 30 && window.navigator.plugins.length > 10) {
+                        details._360EE += 3;
+                        details._360SE += 3;
+                        details.Chrome += 3;
+                    } else if (window.navigator.plugins.length <= 10) {
+                        details.Chromium += 6;
+                    }
                 } else {
-                    init.Chromium += 6;
+                    details._360SE -= 50;
+                    details._360EE -= 50;
+                    if (/Linux/i.test(window.navigator.userAgent)) {
+                        details.Chromium += 5;
+                    }
+                }
+                var found = 0;
+                var respdf = undefined;
+                for (var i in window.navigator.plugins) {
+                    if (!!(respdf = /^(.+) PDF Viewer$/.exec(window.navigator.plugins[i].name))) {
+                        //console.log(respdf[1]);
+                        if (respdf[1] == "Chrome") {
+                            details.Chrome += 6;
+                            details._360SE += 6;
+                            found = 1;
+                            break;
+                        }
+                        if (respdf[1] == "Chromium") {
+                            details.Chromium += 10;
+                            details._360EE += 6;
+                            found = 1;
+                            break;
+                        }
+                    }
+                }
+                if (!found) {
+                    details.Chromium += 9;
                 }
             }
-    
-    
-            var m = new Object();
-            m.Chrome = init.Chrome,
-                m.Chromium = init.Chromium,
-                m["360SE"] = init._360SE,
-                m["360EE"] = init._360EE;
-            var s = [];
-            for (var u in m) {
-                s.push([u, m[u]]);
+            var chrome_result = new Object();
+            chrome_result['Chrome'] = details.Chrome;
+            chrome_result['Chromium'] = details.Chromium;
+            chrome_result['360SE'] = details._360SE;
+            chrome_result['360EE'] = details._360EE;
+            var sortable = [];
+            for (var value in chrome_result) {
+                sortable.push([value, chrome_result[value]]);
             }
-            s.sort(function(e, i) {
-                return i[1] - e[1]
+            sortable.sort(function(a, b) {
+                return b[1] - a[1];
             });
-            this.sorted = s;
-            this.details = init;
-            this.result = s[0][0] || '';
-    
-            return this.result.toLowerCase();
+            this.sorted = sortable;
+            this.details = details;
+            this.result = sortable[0][0];
+            /*console.log("Chrome Weight "+details.Chrome);
+console.log("Chromium Weight "+details.Chromium);
+console.log("360SE Weight "+details._360SE);  
+console.log("360EE Weight "+details._360EE);*/
+            if (results == "result") {
+                return sortable[0][0];
+            } else if (results == "details") {
+                return chrome_result;
+            } else if (results == "sorted") {
+                return sortable;
+            }
         }
-    
+
+    };
+    var checkChromeWeight = function checkChromeWeight() {
+        // console.log(chrome_weight.sorted);
+        var _ua = window.navigator.userAgent;
+        try {
+            chrome_weight.exec();
+            if (/Chrome\/([\d.])+\sSafari\/([\d.])+$/.test(_ua)) {
+                // console.log("经测试，您正在使用Chromium内核的浏览器，权重最高的浏览器为"+chrome_weight.result);
+                // console.log("<br/><br/>四个浏览器所占权重从高到低分别为:<br/>");
+                // for(let i = 0;i < chrome_weight.sorted.length ;i++){
+                //   console.log(chrome_weight.sorted[i][0]+" : "+chrome_weight.sorted[i][1]+'<br/>');
+                // }
+                return chrome_weight.result;
+            } else {}
+            // console.log("经测试，您未使用Chromium内核的浏览器。此程序不能运作。");
+
+            // console.log(chrome_weight.sorted);
+        } catch (e) {
+            console.warn(e)
+            return;
+        }
     };
     /**
      * 获取 Chromium 内核浏览器类型
@@ -188,7 +245,7 @@
         // }
 
 
-        return browser360.check();
+        return checkChromeWeight() || 'chrome';
     }
     var client = function(){
         var browser = {};
