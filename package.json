@@ -4,10 +4,10 @@
   "description": "一个检测国内外浏览器版本的前端 js 库",
   "main": "browser.js",
   "directories": {
-    "cp": "cp browser.js test/browser.js"
+    "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "cp": "cp browser.js test/browser.js"
   },
   "repository": {
     "type": "git",
