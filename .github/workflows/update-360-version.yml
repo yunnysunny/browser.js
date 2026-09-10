@@ -1,0 +1,45 @@
+name: Update 360 Browser Chrome Version
+
+on:
+  schedule:
+    - cron: '0 8 * * 1' # Every Monday at UTC 08:00
+  workflow_dispatch: # Manual trigger
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch latest 360 Chrome version
+        run: node scripts/fetch-360-version.js
+
+      - name: Check for changes
+        id: diff
+        run: |
+          if git diff --quiet browser.js; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create Pull Request
+        if: steps.diff.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          title: 'chore: update MAX_360_CHROME_VERSION'
+          body: |
+            Auto-detected a new Chrome kernel version used by 360 Browser.
+            Updated `MAX_360_CHROME_VERSION` in `browser.js`.
+
+            _This PR was created automatically by the update-360-version workflow._
+          branch: auto/update-360-chrome-version
+          commit-message: 'chore: update MAX_360_CHROME_VERSION'
+          delete-branch: true
